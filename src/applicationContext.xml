@@ -17,14 +17,14 @@
 
 
 	
-<bean id="test" class="com.github.ywind.Test"></bean>      
-<bean id="cacheAop" class="CacheAop">  
+<bean id="test" class="com.github.ywind.Test.Test"></bean>      
+<bean id="cacheAop" class="com.github.ywind.CacheAop">  
 </bean>  
 <aop:aspectj-autoproxy proxy-target-class="true"/> 
 <aop:config>  
   
     <aop:aspect id="myAspect" ref="cacheAop">  
-        <aop:pointcut id="pt" expression="execution(* com.github.ywind.Test.*(..))" />  
+        <aop:pointcut id="pt" expression="execution(* com.github.ywind.Test.Test.*(..))" />  
         <aop:around pointcut-ref="pt" method="around" />  
     </aop:aspect>  
   

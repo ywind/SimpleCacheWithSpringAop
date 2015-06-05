@@ -2,7 +2,6 @@ package com.github.ywind;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -19,10 +18,10 @@ import org.springframework.stereotype.Component;
 // execute before @Transactional
 public class CacheAop {
 	static int MaxLengthForLRU = 100;
-	private static Map<String, LRUListHashMap<Integer,Cache<Object>>> hashmap = new HashMap<String, LRUListHashMap<Integer,Cache<Object>>>();
+	static int ExpirationTime = 6000;
+	private static Map<String, LRUListHashMap<Integer,Cache>> hashmap = new HashMap<String, LRUListHashMap<Integer,Cache>>();
 	// @Around("execution(* Test.*(..))")
 
-	@SuppressWarnings("unchecked")
 	public Object around(ProceedingJoinPoint pjp) {
 		System.out.println("do cache");
 		Object result = null;
@@ -33,11 +32,11 @@ public class CacheAop {
 			Integer integer = Integer.valueOf(values[0].toString());
 			if (hashmap
 					.containsKey(method.getAnnotation(GetCache.class).type())) {
-				LRUListHashMap<Integer, Cache<Object>> lru = hashmap.get(method
+				LRUListHashMap<Integer, Cache> lru = hashmap.get(method
 						.getAnnotation(GetCache.class).type());
 
 				if (lru.containsKey(integer)
-						&& lru.get(integer).getTime() + 5000 < System
+						&& lru.get(integer).getTime() + ExpirationTime < System
 								.currentTimeMillis()) {
 					result = lru.get(integer).getT();
 					System.out.println("cache");
@@ -45,8 +44,7 @@ public class CacheAop {
 					try {
 						System.out.println("no cache");
 						result = pjp.proceed();
-						lru.put(integer, new Cache<Object>(
-								(List<Object>) result));
+						lru.put(integer, new Cache(result));
 					} catch (Throwable e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -56,7 +54,7 @@ public class CacheAop {
 
 			} else {
 				
-				LRUListHashMap<Integer, Cache<Object>> lru = new LRUListHashMap<Integer, Cache<Object>>(
+				LRUListHashMap<Integer, Cache> lru = new LRUListHashMap<Integer, Cache>(
 						MaxLengthForLRU);
 				System.out.println("first cache");
 				try {
@@ -65,7 +63,7 @@ public class CacheAop {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				lru.put(integer, new Cache<Object>((List<Object>) result));
+				lru.put(integer, new Cache(result));
 				hashmap.put(method.getAnnotation(GetCache.class).type(), lru);
 			}
 		} else {

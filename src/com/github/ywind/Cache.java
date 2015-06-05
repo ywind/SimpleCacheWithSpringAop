@@ -1,11 +1,9 @@
 package com.github.ywind;
 
-import java.util.List;
-
-public class Cache<E> {
+public class Cache {
 	private long time;
-	private List<E> t;
-	public Cache(List<E> t){
+	private Object t;
+	public Cache(Object t){
 		this.t = t;
 		this.time = System.currentTimeMillis();
 	}
@@ -15,10 +13,10 @@ public class Cache<E> {
 	public void setTime(long time) {
 		this.time = time;
 	}
-	public List<E> getT() {
+	public Object getT() {
 		return t;
 	}
-	public void setT(List<E> t) {
+	public void setT(Object t) {
 		this.t = t;
 	}
 	
