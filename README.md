@@ -12,4 +12,6 @@
 
 为了缓存的时效性，可以设置过期时间和List的长度。
 
-##具体设置请看Test里面的测试
+##注意
+
+插件中使用的是非线程安全的linkedhashMap，如果需要有线程安全的特性的话，可以采用<a href="https://github.com/ben-manes/concurrentlinkedhashmap">ConcurrentLinkedHashMap</a> 或者其他的线程同步的手段
